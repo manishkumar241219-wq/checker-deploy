@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>YouTube Embed Checker</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 30px;
+
+            background: #f3f3f3;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: #111;
+
+        }
+
+
+        /* =====================================
+           CONTAINER
+        ===================================== */
+
+        .container {
+
+            width: 650px;
+
+            max-width: 100%;
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 15px 45px
+                rgba(0, 0, 0, 0.10);
+
+        }
+
+
+        /* =====================================
+           HEADING
+        ===================================== */
+
+        h1 {
+
+            font-size: 28px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .description {
+
+            color: #777;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        /* =====================================
+           INPUT
+        ===================================== */
+
+        .input-area {
+
+            display: flex;
+
+            gap: 10px;
+
+        }
+
+
+        #youtubeUrl {
+
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 14px;
+
+            border:
+                1px solid #ddd;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            outline: none;
+
+        }
+
+
+        #youtubeUrl:focus {
+
+            border-color: #111;
+
+        }
+
+
+        #checkButton {
+
+            padding:
+                0 20px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #111;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+        }
+
+
+        #checkButton:hover {
+
+            opacity: 0.8;
+
+        }
+
+
+        #checkButton:disabled {
+
+            opacity: 0.5;
+
+            cursor: not-allowed;
+
+        }
+
+
+        /* =====================================
+           RESULT
+        ===================================== */
+
+        #result {
+
+            display: none;
+
+            margin-top: 25px;
+
+            padding: 18px;
+
+            border-radius: 14px;
+
+        }
+
+
+        #result.success {
+
+            display: block;
+
+            background: #eaf8ee;
+
+            border:
+                1px solid #b8e4c4;
+
+        }
+
+
+        #result.error {
+
+            display: block;
+
+            background: #fff0f0;
+
+            border:
+                1px solid #f0bcbc;
+
+        }
+
+
+        #result.loading {
+
+            display: block;
+
+            background: #f5f5f5;
+
+            border:
+                1px solid #ddd;
+
+        }
+
+
+        .result-title {
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .result-message {
+
+            font-size: 13px;
+
+            color: #555;
+
+        }
+
+
+        /* =====================================
+           VIDEO
+        ===================================== */
+
+        .video-container {
+
+            display: none;
+
+            margin-top: 20px;
+
+            width: 100%;
+
+            aspect-ratio: 16 / 9;
+
+            background: #000;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+        }
+
+
+        .video-container.show {
+
+            display: block;
+
+        }
+
+
+        #youtube-player {
+
+            width: 100%;
+
+            height: 100%;
+
+        }
+
+
+        /* =====================================
+           VIDEO INFO
+        ===================================== */
+
+        .video-info {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 15px;
+
+            background: #f7f7f7;
+
+            border-radius: 10px;
+
+        }
+
+
+        .video-info.show {
+
+            display: block;
+
+        }
+
+
+        .info-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 6px 0;
+
+            font-size: 13px;
+
+        }
+
+
+        .info-label {
+
+            color: #777;
+
+        }
+
+
+        .info-value {
+
+            font-weight: 600;
+
+            text-align: right;
+
+            word-break: break-all;
+
+        }
+
+
+        /* =====================================
+           ERROR CODE
+        ===================================== */
+
+        .error-code {
+
+            margin-top: 8px;
+
+            font-family:
+                monospace;
+
+            font-size: 12px;
+
+            color: #c00;
+
+        }
+
+
+        /* =====================================
+           MOBILE
+        ===================================== */
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding: 15px;
+
+            }
+
+
+            .container {
+
+                padding: 20px;
+
+                border-radius: 15px;
+
+            }
+
+
+            h1 {
+
+                font-size: 23px;
+
+            }
+
+
+            .input-area {
+
+                flex-direction: column;
+
+            }
+
+
+            #checkButton {
+
+                height: 45px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <h1>
+            YouTube Embed Checker
+        </h1>
+
+
+        <p class="description">
+            Paste a YouTube video link and check whether
+            it can actually be played inside an embedded
+            player.
+        </p>
+
+
+        <!-- =================================
+             INPUT
+        ================================== -->
+
+        <div class="input-area">
+
+
+            <input
+                type="text"
+                id="youtubeUrl"
+                placeholder="Paste YouTube link here..."
+            >
+
+
+            <button
+                id="checkButton"
+            >
+                Check
+            </button>
+
+
+        </div>
+
+
+
+        <!-- =================================
+             RESULT
+        ================================== -->
+
+        <div id="result">
+
+            <div
+                class="result-title"
+                id="resultTitle"
+            >
+            </div>
+
+
+            <div
+                class="result-message"
+                id="resultMessage"
+            >
+            </div>
+
+
+            <div
+                class="error-code"
+                id="errorCode"
+            >
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================
+             VIDEO
+        ================================== -->
+
+        <div
+            class="video-container"
+            id="videoContainer"
+        >
+
+            <div
+                id="youtube-player"
+            ></div>
+
+        </div>
+
+
+
+        <!-- =================================
+             VIDEO INFORMATION
+        ================================== -->
+
+        <div
+            class="video-info"
+            id="videoInfo"
+        >
+
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Video ID
+                </span>
+
+                <span
+                    class="info-value"
+                    id="videoId"
+                >
+                </span>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Title
+                </span>
+
+                <span
+                    class="info-value"
+                    id="videoTitle"
+                >
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================
+         YOUTUBE IFRAME API
+    ====================================== -->
+
+    <script>
+
+        let player = null;
+
+        let currentVideoId = null;
+
+
+        /*
+         * Load YouTube IFrame API
+         */
+
+        const script =
+            document.createElement(
+                "script"
+            );
+
+
+        script.src =
+            "https://www.youtube.com/iframe_api";
+
+
+        document.head.appendChild(
+            script
+        );
+
+
+        /* =====================================
+           ELEMENTS
+        ===================================== */
+
+        const urlInput =
+            document.getElementById(
+                "youtubeUrl"
+            );
+
+
+        const checkButton =
+            document.getElementById(
+                "checkButton"
+            );
+
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+
+        const resultTitle =
+            document.getElementById(
+                "resultTitle"
+            );
+
+
+        const resultMessage =
+            document.getElementById(
+                "resultMessage"
+            );
+
+
+        const errorCode =
+            document.getElementById(
+                "errorCode"
+            );
+
+
+        const videoContainer =
+            document.getElementById(
+                "videoContainer"
+            );
+
+
+        const videoInfo =
+            document.getElementById(
+                "videoInfo"
+            );
+
+
+        const videoIdElement =
+            document.getElementById(
+                "videoId"
+            );
+
+
+        const videoTitle =
+            document.getElementById(
+                "videoTitle"
+            );
+
+
+        /* =====================================
+           EXTRACT VIDEO ID
+        ===================================== */
+
+        function getVideoId(url) {
+
+            try {
+
+                const parsedUrl =
+                    new URL(url);
+
+
+                /*
+                 * youtu.be/VIDEO_ID
+                 */
+
+                if (
+                    parsedUrl.hostname
+                        .includes("youtu.be")
+                ) {
+
+                    return parsedUrl
+                        .pathname
+                        .substring(1)
+                        .split("/")[0];
+
+                }
+
+
+                /*
+                 * youtube.com/watch?v=VIDEO_ID
+                 */
+
+                if (
+                    parsedUrl.hostname
+                        .includes("youtube.com")
+                ) {
+
+                    const videoId =
+                        parsedUrl.searchParams
+                            .get("v");
+
+
+                    if (videoId) {
+
+                        return videoId;
+
+                    }
+
+
+                    /*
+                     * youtube.com/embed/VIDEO_ID
+                     */
+
+                    const embedMatch =
+                        parsedUrl.pathname
+                            .match(
+                                /\/embed\/([^/]+)/
+                            );
+
+
+                    if (embedMatch) {
+
+                        return embedMatch[1];
+
+                    }
+
+
+                    /*
+                     * youtube.com/shorts/VIDEO_ID
+                     */
+
+                    const shortsMatch =
+                        parsedUrl.pathname
+                            .match(
+                                /\/shorts\/([^/]+)/
+                            );
+
+
+                    if (shortsMatch) {
+
+                        return shortsMatch[1];
+
+                    }
+
+                }
+
+
+                return null;
+
+            }
+
+            catch (error) {
+
+                return null;
+
+            }
+
+        }
+
+
+        /* =====================================
+           CHECK BUTTON
+        ===================================== */
+
+        checkButton.addEventListener(
+            "click",
+            checkVideo
+        );
+
+
+        /* =====================================
+           ENTER KEY
+        ===================================== */
+
+        urlInput.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    checkVideo();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================
+           CHECK VIDEO
+        ===================================== */
+
+        function checkVideo() {
+
+            const url =
+                urlInput.value.trim();
+
+
+            if (!url) {
+
+                showError(
+                    "Please paste a YouTube link."
+                );
+
+                return;
+
+            }
+
+
+            const videoId =
+                getVideoId(url);
+
+
+            if (!videoId) {
+
+                showError(
+                    "This doesn't look like a valid YouTube video link."
+                );
+
+                return;
+
+            }
+
+
+            currentVideoId =
+                videoId;
+
+
+            /*
+             * Reset old player
+             */
+
+            destroyPlayer();
+
+
+            /*
+             * Show loading
+             */
+
+            showLoading();
+
+
+            /*
+             * Create player
+             */
+
+            if (
+                typeof YT !== "undefined" &&
+                YT.Player
+            ) {
+
+                createPlayer(
+                    videoId
+                );
+
+            }
+
+            else {
+
+                /*
+                 * API hasn't loaded yet.
+                 * Wait and try again.
+                 */
+
+                const waitForAPI =
+                    setInterval(
+                        function() {
+
+                            if (
+                                typeof YT !== "undefined" &&
+                                YT.Player
+                            ) {
+
+                                clearInterval(
+                                    waitForAPI
+                                );
+
+
+                                createPlayer(
+                                    videoId
+                                );
+
+                            }
+
+                        },
+                        100
+                    );
+
+            }
+
+        }
+
+
+        /* =====================================
+           CREATE PLAYER
+        ===================================== */
+
+        function createPlayer(
+            videoId
+        ) {
+
+            player =
+                new YT.Player(
+                    "youtube-player",
+                    {
+
+                        width: "100%",
+
+                        height: "100%",
+
+                        videoId:
+                            videoId,
+
+                        playerVars: {
+
+                            autoplay: 0,
+
+                            controls: 1,
+
+                            rel: 0,
+
+                            playsinline: 1
+
+                        },
+
+                        events: {
+
+                            onReady:
+                                onPlayerReady,
+
+                            onError:
+                                onPlayerError
+
+                        }
+
+                    }
+                );
+
+        }
+
+
+        /* =====================================
+           PLAYER READY
+        ===================================== */
+
+        function onPlayerReady(
+            event
+        ) {
+
+            /*
+             * If YouTube successfully created
+             * and loaded the video, show success.
+             */
+
+            const data =
+                event.target
+                    .getVideoData();
+
+
+            showSuccess(
+                data
+            );
+
+        }
+
+
+        /* =====================================
+           PLAYER ERROR
+        ===================================== */
+
+        function onPlayerError(
+            event
+        ) {
+
+            console.log(
+                "YouTube error:",
+                event.data
+            );
+
+
+            /*
+             * YouTube error codes:
+             *
+             * 2   = Invalid parameter
+             * 5   = HTML5 player error
+             * 100 = Video unavailable
+             * 101 = Embedding not allowed
+             * 150 = Embedding not allowed
+             */
+
+            let message =
+                "YouTube could not play this video.";
+
+
+            if (
+                event.data === 2
+            ) {
+
+                message =
+                    "Invalid YouTube video ID.";
+
+            }
+
+
+            else if (
+                event.data === 5
+            ) {
+
+                message =
+                    "HTML5 player error.";
+
+            }
+
+
+            else if (
+                event.data === 100
+            ) {
+
+                message =
+                    "Video unavailable, private, or removed.";
+
+            }
+
+
+            else if (
+                event.data === 101 ||
+                event.data === 150
+            ) {
+
+                message =
+                    "The owner does not allow this video to be embedded.";
+
+            }
+
+
+            showError(
+                message,
+                event.data
+            );
+
+        }
+
+
+        /* =====================================
+           SUCCESS
+        ===================================== */
+
+        function showSuccess(
+            data
+        ) {
+
+            result.className =
+                "success";
+
+
+            resultTitle.innerText =
+                "✅ Embeddable";
+
+
+            resultMessage.innerText =
+                "The video loaded successfully inside the YouTube embedded player.";
+
+
+            errorCode.innerText =
+                "";
+
+
+            videoContainer.classList
+                .add("show");
+
+
+            videoInfo.classList
+                .add("show");
+
+
+            videoIdElement.innerText =
+                currentVideoId;
+
+
+            videoTitle.innerText =
+                data &&
+                data.title
+                    ? data.title
+                    : "Unknown";
+
+        }
+
+
+        /* =====================================
+           ERROR
+        ===================================== */
+
+        function showError(
+            message,
+            code = null
+        ) {
+
+            result.className =
+                "error";
+
+
+            resultTitle.innerText =
+                "❌ Not embeddable";
+
+
+            resultMessage.innerText =
+                message;
+
+
+            if (code !== null) {
+
+                errorCode.innerText =
+                    "YouTube error code: " +
+                    code;
+
+            }
+
+            else {
+
+                errorCode.innerText =
+                    "";
+
+            }
+
+
+            videoContainer.classList
+                .remove("show");
+
+
+            videoInfo.classList
+                .remove("show");
+
+        }
+
+
+        /* =====================================
+           LOADING
+        ===================================== */
+
+        function showLoading() {
+
+            result.className =
+                "loading";
+
+
+            resultTitle.innerText =
+                "Checking...";
+
+
+            resultMessage.innerText =
+                "Trying to load the video inside an embedded YouTube player.";
+
+
+            errorCode.innerText =
+                "";
+
+
+            videoContainer.classList
+                .remove("show");
+
+
+            videoInfo.classList
+                .remove("show");
+
+        }
+
+
+        /* =====================================
+           DESTROY PLAYER
+        ===================================== */
+
+        function destroyPlayer() {
+
+            if (!player) {
+
+                return;
+
+            }
+
+
+            try {
+
+                player.destroy();
+
+            }
+
+            catch (error) {
+
+                console.log(
+                    error
+                );
+
+            }
+
+
+            player = null;
+
+
+            /*
+             * Recreate the player container
+             * because YouTube removes its contents
+             * when destroy() is called.
+             */
+
+            const oldPlayer =
+                document.getElementById(
+                    "youtube-player"
+                );
+
+
+            if (oldPlayer) {
+
+                oldPlayer.remove();
+
+            }
+
+
+            const newPlayer =
+                document.createElement(
+                    "div"
+                );
+
+
+            newPlayer.id =
+                "youtube-player";
+
+
+            videoContainer.appendChild(
+                newPlayer
+            );
+
+        }
+
+
+        /* =====================================
+           API READY
+        ===================================== */
+
+        window.onYouTubeIframeAPIReady =
+            function() {
+
+                console.log(
+                    "YouTube API ready"
+                );
+
+            };
+
+    </script>
+
+</body>
+
+</html>
